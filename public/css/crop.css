@@ -1,0 +1,81 @@
+/* ============================================================
+   Javapucino POS — Potong gambar sebelum unggah
+   Memakai token warna & radius dari app.css supaya seragam.
+   ============================================================ */
+
+/* ---------- Lapisan modal ---------- */
+.crop-scrim{
+  position:fixed;inset:0;z-index:320;padding:20px;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(176,20,26,.28);backdrop-filter:blur(2px);
+}
+.crop-scrim.open{display:flex}
+
+.crop-modal{
+  background:#fff;border-radius:var(--r-xl);box-shadow:var(--shadow-3);
+  width:100%;max-width:880px;max-height:92vh;
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:cropPop .17s ease-out;
+}
+@keyframes cropPop{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){ .crop-modal{animation:none} }
+
+.crop-head{display:flex;align-items:center;gap:10px;padding:18px 20px 14px;flex:none}
+.crop-head h3{font-family:var(--f-d);font-size:17px;font-weight:800;margin:0;letter-spacing:-.02em}
+.crop-head .sub{font-size:12px;color:var(--ink-3);font-weight:600;margin-top:2px}
+
+.crop-body{padding:0 20px 4px;overflow-y:auto;flex:1}
+.crop-foot{
+  display:flex;gap:9px;flex:none;border-top:1px solid var(--line-soft);margin-top:14px;
+  padding:16px 20px calc(18px + env(safe-area-inset-bottom,0px));
+}
+.crop-foot .btn{flex:1}
+.crop-foot .btn-red{flex:1.6}
+
+/* ---------- Area gambar ---------- */
+.crop-stage{
+  background:var(--mist);border:1px solid var(--line);border-radius:var(--r-l);
+  overflow:hidden;height:min(52vh,420px);
+}
+.crop-stage img{display:block;max-width:100%}
+
+/* Cropper.js memakai warna netral; disesuaikan ke palet merah Javapucino */
+.crop-stage .cropper-view-box{outline:1px solid var(--red);outline-color:rgba(227,30,36,.85)}
+.crop-stage .cropper-line,
+.crop-stage .cropper-point{background-color:var(--red)}
+.crop-stage .cropper-point{width:9px;height:9px;opacity:1;border-radius:2px}
+.crop-stage .cropper-dashed{border-color:rgba(255,255,255,.65)}
+
+/* ---------- Toolbar ---------- */
+.crop-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.crop-ratios{display:flex;gap:7px;flex-wrap:wrap;min-width:0}
+.crop-ratios .chip{height:32px;padding:0 12px;font-size:12.5px;cursor:pointer}
+.crop-steps{display:flex;gap:6px;margin-left:auto}
+.crop-steps .btn{min-width:38px;padding:0 10px;font-size:15px;line-height:1}
+
+.crop-note{font-size:11.5px;color:var(--ink-4);font-weight:600;margin:10px 0 2px}
+.crop-busy{font-size:12.5px;font-weight:700;color:var(--ink-3)}
+
+/* ---------- Daftar gambar siap unggah ---------- */
+.crop-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:12px}
+.crop-thumb{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.crop-thumb .ph{position:relative;aspect-ratio:16/10;background:var(--snow)}
+.crop-thumb .ph img{width:100%;height:100%;object-fit:contain}
+.crop-thumb .no{
+  position:absolute;top:8px;left:8px;min-width:24px;height:24px;border-radius:99px;
+  background:var(--red);color:#fff;font-family:var(--f-d);font-weight:800;font-size:12px;
+  display:grid;place-items:center;
+}
+.crop-thumb .meta{padding:9px 11px 0}
+.crop-thumb .meta b{display:block;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crop-thumb .meta span{font-size:11.5px;color:var(--ink-4);font-weight:600}
+.crop-thumb .acts{display:flex;gap:6px;padding:9px 11px 11px}
+
+@media (max-width: 640px){
+  .crop-scrim{padding:0;align-items:flex-end}
+  .crop-modal{max-height:96vh;border-radius:var(--r-xl) var(--r-xl) 0 0}
+  .crop-stage{height:44vh}
+  .crop-steps{margin-left:0}
+  .crop-foot{flex-wrap:wrap}
+  .crop-foot .btn{flex:1 1 100%}
+}

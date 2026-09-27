@@ -1,0 +1,36 @@
+JAVAPUCINO POS — LANGKAH CEPAT (LARAGON)
+========================================
+
+1. Ekstrak ke: C:\laragon\www\javapucino
+
+2. Buka Laragon > Terminal:
+   cd C:\laragon\www\javapucino
+   composer install
+   copy .env.example .env
+   php artisan key:generate
+
+3. Buat database di phpMyAdmin:
+   Nama     : javapucino
+   Collation: utf8mb4_unicode_ci
+
+4. Isi database + data contoh:
+   php artisan migrate --seed
+   php artisan storage:link
+
+5. Jalankan:
+   php artisan serve
+   -> http://127.0.0.1:8000
+
+LOGIN
+-----
+Admin : admin / password123
+Kasir : rina  / password123
+
+Layar pelanggan (tanpa login): http://127.0.0.1:8000/menu
+
+JIKA TERJADI ERROR
+------------------
+- "Please provide a valid cache path"  -> pastikan folder storage/framework/{cache,sessions,views} ada
+- Halaman blank / error 500            -> php artisan config:clear && php artisan cache:clear
+- Perubahan .env tidak terbaca         -> php artisan config:clear
+- Ingin mengulang dari nol             -> php artisan migrate:fresh --seed

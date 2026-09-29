@@ -4,11 +4,12 @@
 </div>
 
 @if($q['current'])
-  <div class="qnow">
-    <div class="cap">Pesanan siap diambil</div>
+   <div class="qnow">
+    <div class="cap">Nomor Antrian</div>
     <div class="no">{{ $q['current']['no'] }}</div>
-    <div class="who">{{ $q['current']['name'] ?: 'Silakan ambil di konter' }}</div>
-    <div class="qlive"><span class="beat"></span>Diperbarui langsung oleh kasir</div>
+    @if($q['current']['name'])
+      <div class="who">{{ $q['current']['name'] }}</div>
+    @endif
   </div>
 @else
   <div class="qnow idle">

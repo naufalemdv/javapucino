@@ -11,13 +11,14 @@ class Material extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'unit', 'stock', 'min_stock'];
+    protected $fillable = ['name', 'unit', 'stock', 'min_stock', 'unit_cost'];
 
     protected function casts(): array
     {
         return [
             'stock'     => 'decimal:2',
             'min_stock' => 'decimal:2',
+            'unit_cost' => 'decimal:2',
         ];
     }
 
@@ -30,5 +31,11 @@ class Material extends Model
     public function isLow(): bool
     {
         return (float) $this->stock < (float) $this->min_stock;
+    }
+
+    /** Nilai persediaan bahan berdasarkan harga beli terakhir. */
+    public function stockValue(): float
+    {
+        return (float) $this->stock * (float) ($this->unit_cost ?? 0);
     }
 }

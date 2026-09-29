@@ -71,11 +71,10 @@ function render(q) {
     </div>
     ${cur ? `
       <div class="qnow">
-        <div class="cap">Pesanan siap diambil</div>
-        <div class="no">${esc(cur.no)}</div>
-        <div class="who">${cur.name ? esc(cur.name) : 'Silakan ambil di konter'}</div>
-        <div class="qlive"><span class="beat"></span>Diperbarui langsung oleh kasir</div>
-      </div>`
+          <div class="cap">Nomor Antrian</div>
+          <div class="no">${esc(cur.no)}</div>
+          ${cur.name ? `<div class="who">${esc(cur.name)}</div>` : ''}
+        </div>`
     : `<div class="qnow idle">
         <div class="cap">Belum ada yang dipanggil</div>
         <div class="no">—</div>

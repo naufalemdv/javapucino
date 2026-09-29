@@ -20,7 +20,7 @@ class StockService
         ?string $note = null,
     ): StockMovement {
         $before = (float) $product->stock;
-        $after  = max(0, $before + $qty);          // BR-05: stok tidak boleh negatif
+        $after  = max(0, $before + $qty);   // BR-05: stok tidak boleh negatif
 
         $product->forceFill(['stock' => $after])->save();
 
@@ -37,11 +37,15 @@ class StockService
         ]);
     }
 
+    /**
+     * @param  float|null  $unitCost  Harga satuan saat pergerakan (hanya untuk pembelian).
+     */
     public static function moveMaterial(
         Material $material,
         float $qty,
         string $type,
         ?string $note = null,
+        ?float $unitCost = null,
     ): StockMovement {
         $before = (float) $material->stock;
         $after  = max(0, $before + $qty);
@@ -53,6 +57,7 @@ class StockService
             'user_id'      => auth()->id(),
             'type'         => $type,
             'qty'          => $qty,
+            'unit_cost'    => $unitCost,
             'stock_before' => $before,
             'stock_after'  => $after,
             'note'         => $note,

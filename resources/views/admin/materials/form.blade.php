@@ -35,11 +35,35 @@
           </div>
         </div>
 
-        <div class="field">
-          <label>Batas minimum</label>
-          <input class="inp num" name="min_stock" inputmode="decimal" value="{{ old('min_stock', (float) $material->min_stock) }}" required>
-          <div class="hint">Status berubah jadi “Menipis” bila stok di bawah angka ini (BR-13).</div>
+        <div class="row2">
+          <div class="field">
+            <label>Batas minimum</label>
+            <input class="inp num" name="min_stock" inputmode="decimal" value="{{ old('min_stock', (float) $material->min_stock) }}" required>
+            @error('min_stock')<div class="err-text">{{ $message }}</div>@enderror
+            <div class="hint">Status berubah jadi “Menipis” bila stok di bawah angka ini (BR-13).</div>
+          </div>
+          <div class="field">
+            <label>Harga satuan (opsional)</label>
+            <input class="inp num" name="unit_cost" inputmode="numeric" placeholder="0"
+                   value="{{ old('unit_cost', $material->unit_cost ? (int) $material->unit_cost : '') }}">
+            @error('unit_cost')<div class="err-text">{{ $message }}</div>@enderror
+            <div class="hint">
+              @if($isNew)
+                Bila diisi bersama stok awal, nilainya tercatat sebagai pembelian di menu Pengeluaran.
+              @else
+                Harga beli terakhir, dipakai sebagai nilai awal pada form Restock.
+              @endif
+            </div>
+          </div>
         </div>
+
+        @unless($isNew)
+          <div class="hint">
+            Nilai persediaan saat ini:
+            <b>{{ rupiah($material->stockValue()) }}</b>
+            ({{ angka($material->stock) }} {{ $material->unit }} × {{ rupiah($material->unit_cost) }})
+          </div>
+        @endunless
 
         <div style="display:flex;gap:9px">
           <a class="btn btn-line" style="flex:1" href="{{ route('admin.materials.index') }}">Batal</a>

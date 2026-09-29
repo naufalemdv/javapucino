@@ -26,12 +26,12 @@
 
     <div class="field">
       <label>Modal awal laci</label>
-      <input class="inp num" id="openCash" inputmode="numeric" value="{{ old('opening_cash', 300000) }}" data-money="openCashRaw">
-      <input type="hidden" name="opening_cash" id="openCashRaw" value="{{ old('opening_cash', 300000) }}">
+      <input class="inp num" id="openCash" inputmode="numeric" value="{{ old('opening_cash', '') }}" data-money="openCashRaw" placeholder="Masukkan nominal modal awal">
+      <input type="hidden" name="opening_cash" id="openCashRaw" value="{{ old('opening_cash', '') }}">
       <div class="hint">Uang tunai di laci sebelum transaksi pertama.</div>
     </div>
 
-    <button class="btn btn-red btn-lg btn-block" type="submit">Mulai shift &amp; buka kasir</button>
+    <button class="btn btn-red btn-lg btn-block" type="submit" id="btnStartShift" disabled style="opacity:0.5;cursor:not-allowed">Mulai shift &amp; buka kasir</button>
   </form>
 
   <form method="POST" action="{{ route('logout') }}">
@@ -49,6 +49,25 @@ document.querySelectorAll('[data-shift]').forEach(b => b.addEventListener('click
   type.value = b.dataset.shift; mark();
 }));
 mark();
+
+// Disable button until modal awal laci is filled
+const btnStart = document.getElementById('btnStartShift');
+const cashInput = document.getElementById('openCash');
+const cashRaw   = document.getElementById('openCashRaw');
+
+function toggleBtn() {
+  const val = parseInt(cashRaw.value) || 0;
+  const hasValue = val > 0;
+  btnStart.disabled = !hasValue;
+  btnStart.style.opacity = hasValue ? '1' : '0.5';
+  btnStart.style.cursor  = hasValue ? 'pointer' : 'not-allowed';
+}
+
+cashInput.addEventListener('input', () => setTimeout(toggleBtn, 50));
+cashInput.addEventListener('change', () => setTimeout(toggleBtn, 50));
+new MutationObserver(toggleBtn).observe(cashRaw, { attributes: true, attributeFilter: ['value'] });
+setInterval(toggleBtn, 300);
+toggleBtn();
 
 </script>
 @endpush

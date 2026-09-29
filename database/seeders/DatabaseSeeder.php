@@ -16,5 +16,6 @@ class DatabaseSeeder extends Seeder
             MaterialSeeder::class,
             DemoTransactionSeeder::class,
         ]);
+        $this->call(ExpenseCategorySeeder::class);
     }
 }

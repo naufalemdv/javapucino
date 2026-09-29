@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ExpenseCategoryController;
+use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\MaterialController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ReportController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\Kasir\QueueController;
 use App\Http\Controllers\Kasir\ShiftController;
 use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ShiftReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +26,6 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::get('/', fn () => redirect()->route('menu'));
-
 Route::get('/menu', [BoardController::class, 'index'])->name('menu');
 Route::get('/menu/antrian', [BoardController::class, 'queue'])->name('menu.queue');
 
@@ -36,7 +38,6 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:login');
 });
-
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 
 /*
@@ -90,7 +91,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('categories', CategoryController::class)->except('show');
     Route::resource('materials', MaterialController::class)->except('show');
     Route::post('materials/{material}/restock', [MaterialController::class, 'restock'])->name('materials.restock');
-
     Route::resource('users', UserController::class)->except('show');
     Route::post('users/{user}/toggle', [UserController::class, 'toggle'])->name('users.toggle');
 
@@ -103,7 +103,24 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Laporan, audit, pengaturan
     Route::get('/laporan', [ReportController::class, 'index'])->name('report');
     Route::get('/laporan/export', [ReportController::class, 'export'])->name('report.export');
+        // Rekap shift & selisih kas (FR-28)
+    Route::get('/shift', [ShiftReportController::class, 'index'])->name('shifts');
+    Route::get('/shift/export', [ShiftReportController::class, 'export'])->name('shifts.export');
+    
     Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit');
+    
+
+    // Pengeluaran & laba bersih (FR-27) — rute statis didaftarkan sebelum resource
+    Route::get('/pengeluaran/export', [ExpenseController::class, 'export'])->name('expenses.export');
+    Route::get('/pengeluaran/kategori', [ExpenseCategoryController::class, 'index'])->name('expenses.categories');
+    Route::post('/pengeluaran/kategori', [ExpenseCategoryController::class, 'store'])->name('expenses.categories.store');
+    Route::put('/pengeluaran/kategori/{category}', [ExpenseCategoryController::class, 'update'])->name('expenses.categories.update');
+    Route::delete('/pengeluaran/kategori/{category}', [ExpenseCategoryController::class, 'destroy'])->name('expenses.categories.destroy');
+    Route::resource('pengeluaran', ExpenseController::class)
+        ->except('show')
+        ->parameters(['pengeluaran' => 'expense'])
+        ->names('expenses');
+
     Route::get('/pengaturan', [SettingController::class, 'index'])->name('settings');
     Route::put('/pengaturan', [SettingController::class, 'update'])->name('settings.update');
     Route::post('/pengaturan/slide', [SettingController::class, 'slideStore'])->name('settings.slides.store');
@@ -111,8 +128,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('/pengaturan/slide/{index}', [SettingController::class, 'slideDestroy'])->whereNumber('index')->name('settings.slides.destroy');
 
     // Antrian versi admin
-    Route::get('/antrian', [\App\Http\Controllers\Kasir\QueueController::class, 'index'])->name('antrian');
-    Route::post('/antrian/berikutnya', [\App\Http\Controllers\Kasir\QueueController::class, 'next'])->name('antrian.next');
-    Route::post('/antrian/selesai', [\App\Http\Controllers\Kasir\QueueController::class, 'picked'])->name('antrian.picked');
-    Route::post('/antrian/{transaction}/panggil', [\App\Http\Controllers\Kasir\QueueController::class, 'call'])->name('antrian.call');
+    Route::get('/antrian', [QueueController::class, 'index'])->name('antrian');
+    Route::post('/antrian/berikutnya', [QueueController::class, 'next'])->name('antrian.next');
+    Route::post('/antrian/selesai', [QueueController::class, 'picked'])->name('antrian.picked');
+    Route::post('/antrian/{transaction}/panggil', [QueueController::class, 'call'])->name('antrian.call');
 });

@@ -42,6 +42,7 @@
         <table>
           <thead><tr>
             <th>No. transaksi</th><th>Tanggal</th><th>Kasir</th><th>Pelanggan</th>
+            <th>Pesanan</th>
             <th>Bayar</th><th class="r">Total</th><th class="r">Aksi</th>
           </tr></thead>
           <tbody>
@@ -51,6 +52,11 @@
               <td class="num">{{ $t->created_at->format('d/m/Y H:i') }}</td>
               <td>{{ $t->cashier?->name }}</td>
               <td>{{ $t->customer_name ?: '—' }}</td>
+              <td style="font-size:12px;max-width:260px">
+                @foreach($t->items as $item)
+                  <span class="tag t-gray" style="margin:1px 2px">{{ $item->product_name }} ×{{ $item->qty }}</span>
+                @endforeach
+              </td>
               <td><span class="tag {{ $t->payment_method === 'cash' ? 't-gray' : 't-black' }}">{{ $t->paymentLabel() }}</span></td>
               <td class="r num" style="font-weight:800;{{ $t->isVoid() ? 'text-decoration:line-through;color:var(--ink-4)' : '' }}">{{ rupiah($t->total) }}</td>
               <td class="r" style="white-space:nowrap">

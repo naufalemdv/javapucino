@@ -13,7 +13,7 @@ class StockMovement extends Model
 
     protected $fillable = [
         'product_id', 'material_id', 'user_id', 'type', 'qty',
-        'stock_before', 'stock_after', 'reference_type', 'reference_id', 'note',
+        'stock_before', 'stock_after', 'reference_type', 'reference_id', 'note','unit_cost',
     ];
 
     protected function casts(): array

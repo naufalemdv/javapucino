@@ -14,7 +14,7 @@
     <div class="qctrl">
       <div>
         <div class="qbig">
-          <div class="cap">Sedang dipanggil</div>
+          <div class="cap">Nomor Antrian</div>
           <div class="no">{{ $current ? $current->queueLabel() : '—' }}</div>
           <div class="who">
             {{ $current

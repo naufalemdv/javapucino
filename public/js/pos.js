@@ -109,6 +109,10 @@
   }
 
   document.addEventListener('click', function (e) {
+    /* Popup QRIS besar: tutup / buka */
+    if (e.target.id === 'qrisZoom' || e.target.closest('[data-act="qris-zoom-close"]')) return closeQrisZoom();
+    if (e.target.closest('[data-act="qris-zoom"]')) return openQrisZoom();
+
     const addBtn = e.target.closest('[data-add]');
     if (addBtn) return add(addBtn);
 
@@ -145,6 +149,41 @@
       ${cells}${eye(0, 0)}${eye(112, 0)}${eye(0, 112)}</svg>`;
   }
 
+  /* Isi kotak QRIS: gambar asli kalau sudah diunggah, pola cadangan kalau belum */
+  function qrisInner() {
+    return window.JV.qrisImage
+      ? `<img src="${esc(window.JV.qrisImage)}" alt="QRIS" style="width:100%;height:100%;object-fit:contain">`
+      : qrSVG();
+  }
+
+  /* Popup QRIS besar, tampil di atas popup pembayaran */
+  function openQrisZoom() {
+    if (document.getElementById('qrisZoom')) return;
+    document.body.appendChild(el(`
+      <div class="qris-zoom" id="qrisZoom">
+        <div class="qris-zoom-box">
+          <div class="qris-zoom-img">${qrisInner()}</div>
+          <div class="qris-zoom-name">${esc(window.JV.storeName)}</div>
+          <div class="qris-zoom-nmid">NMID ${esc(window.JV.qrisNmid)}</div>
+          <div class="qris-zoom-total">Total ${rp(total())}</div>
+          <button type="button" class="btn btn-red btn-block" data-act="qris-zoom-close">← Kembali ke pembayaran</button>
+        </div>
+      </div>`));
+  }
+
+  function closeQrisZoom() {
+    const z = document.getElementById('qrisZoom');
+    if (z) z.remove();
+  }
+
+  /* Esc menutup popup QRIS dulu, popup pembayaran tetap terbuka */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.getElementById('qrisZoom')) {
+      e.stopImmediatePropagation();
+      closeQrisZoom();
+    }
+  }, true);
+
   function payHTML() {
     const t      = total();
     const change = pay.paid - t;
@@ -179,7 +218,8 @@
         </div>`
       : `
         <div class="qris">
-          <div class="qris-frame">${qrSVG()}</div>
+          <div class="qris-frame" data-act="qris-zoom" style="cursor:zoom-in" title="Klik untuk memperbesar">${qrisInner()}</div>
+          <button type="button" class="btn btn-line btn-sm" data-act="qris-zoom" style="margin:10px 0 12px">🔍 Perbesar QRIS</button>
           <div style="font-weight:800;font-family:var(--f-d);font-size:15px">${esc(window.JV.storeName)}</div>
           <div class="mini">NMID ${esc(window.JV.qrisNmid)} · Semua bank &amp; e-wallet</div>
           <div class="mini" style="margin-top:10px">Tunjukkan QR ke pelanggan, lalu tekan Selesaikan setelah pembayaran masuk.</div>

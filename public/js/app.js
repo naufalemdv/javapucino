@@ -32,6 +32,46 @@
     });
   }
 
+    /* Revisi: popup konfirmasi keluar (kasir diingatkan tutup shift) */
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-act="do-logout"]')) {
+      const f = document.getElementById('logout-form');
+      if (f) f.submit();
+      return;
+    }
+
+    const btn = e.target.closest('[data-act="logout"]');
+    if (!btn) return;
+
+    const isKasir = btn.dataset.kasir === '1';
+    const shiftOpen = btn.dataset.shiftOpen === '1';
+
+    let title = 'Keluar dari sistem?';
+    let body = 'Anda akan keluar dari akun ini.';
+    let extra = '';
+
+    if (isKasir && shiftOpen) {
+      title = 'Sudah tutup shift?';
+      body = 'Shift Anda masih terbuka. Sebaiknya tutup shift dulu supaya rekonsiliasi kas tercatat sebelum keluar.';
+      extra = '<a class="btn btn-black" href="' + btn.dataset.closeUrl + '">Tutup shift</a>';
+    } else if (isKasir) {
+      body = 'Shift Anda sudah ditutup. Anda bisa keluar sekarang.';
+    }
+
+    window.openModal(
+      '<div class="modal-h">' +
+        '<div><h3>' + title + '</h3></div>' +
+        '<button class="x" type="button" data-act="close">✕</button>' +
+      '</div>' +
+      '<div class="modal-b"><p style="margin:0;line-height:1.6">' + body + '</p></div>' +
+      '<div class="modal-f">' +
+        '<button class="btn btn-line" type="button" data-act="close">Kembali</button>' +
+        extra +
+        '<button class="btn btn-red" type="button" data-act="do-logout">Keluar</button>' +
+      '</div>'
+    );
+  });
+
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       window.closeModal();

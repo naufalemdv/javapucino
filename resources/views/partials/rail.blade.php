@@ -58,6 +58,9 @@
             <small>{{ $u->roleLabel() }}@if($shift) · Shift {{ $shift->shift_type }}@endif</small>
         </div>
         <button class="icon-btn" type="button" title="Keluar"
-                onclick="if(confirm('Keluar dari sistem?'))document.getElementById('logout-form').submit()">⏻</button>
+        data-act="logout"
+        data-kasir="{{ $u->isKasir() ? 1 : 0 }}"
+        data-shift-open="{{ $shift ? 1 : 0 }}"
+        data-close-url="{{ $u->isKasir() ? route('kasir.shift.edit') : '' }}">⏻</button>
     </div>
 </aside>

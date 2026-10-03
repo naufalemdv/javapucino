@@ -511,3 +511,17 @@ a{color:inherit;text-decoration:none}
   .page{padding:0}
   .receipt{border:0;max-width:100%}
 }
+/* Revisi: daftar pesanan di halaman antrian */
+.qitems{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.qitems .qi{font-size:12px;line-height:1.3;padding:3px 9px;border-radius:999px;background:#F3F3F5;color:#1B1B1F}
+.qitems .qi b{font-weight:800}
+.qitems-dark{justify-content:center;margin:12px 0 4px}
+.qitems-dark .qi{font-size:13px;padding:5px 11px;background:rgba(255,255,255,.14);color:#fff}
+
+/* Revisi: popup QRIS diperbesar */
+.qris-zoom{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.6)}
+.qris-zoom-box{background:#fff;border-radius:18px;padding:18px;width:min(560px,92vw);max-height:92vh;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.qris-zoom-img{width:100%;height:min(64vh,520px)}
+.qris-zoom-name{font-weight:800;font-size:16px}
+.qris-zoom-nmid{font-size:15px;font-weight:600;color:#3A3A40}
+.qris-zoom-total{font-size:24px;font-weight:800;color:#B0141A;margin-bottom:6px}

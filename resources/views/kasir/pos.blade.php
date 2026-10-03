@@ -105,6 +105,7 @@ window.JV = {
   taxPercent: {{ (float) ($appSettings['tax_percent'] ?? 0) }},
   storeName : @json($appSettings['store_name'] ?? 'Javapucino'),
   qrisNmid  : @json($appSettings['qris_nmid'] ?? '-'),
+  qrisImage : @json(! empty($appSettings['qris_image']) ? asset('storage/'.$appSettings['qris_image']) : null),
 };
 </script>
 <script src="{{ asset('js/pos.js') }}"></script>

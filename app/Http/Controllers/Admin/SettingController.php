@@ -17,35 +17,52 @@ class SettingController extends Controller
     }
 
     public function update(Request $request)
-    {
-        $data = $request->validate([
-            'store_name'          => ['required', 'string', 'max:100'],
-            'store_address'       => ['nullable', 'string', 'max:255'],
-            'store_phone'         => ['nullable', 'string', 'max:40'],
-            'tax_percent'         => ['required', 'numeric', 'min:0', 'max:100'],
-            'paper_width'         => ['required', 'in:58mm,80mm'],
-            'qris_nmid'           => ['nullable', 'string', 'max:50'],
-            'receipt_footer'      => ['nullable', 'string', 'max:255'],
-            'low_stock_threshold' => ['required', 'integer', 'min:0', 'max:999'],
-            'board_slide_seconds' => ['required', 'integer', 'min:3', 'max:120'],
-        ], [], [
-            'store_name' => 'nama toko', 'tax_percent' => 'pajak',
-            'paper_width' => 'lebar kertas', 'low_stock_threshold' => 'ambang stok menipis',
-            'board_slide_seconds' => 'durasi per gambar',
-        ]);
+{
+    $data = $request->validate([
+        'store_name' => ['required', 'string', 'max:100'],
+        'store_address' => ['nullable', 'string', 'max:255'],
+        'store_phone' => ['nullable', 'string', 'max:40'],
+        'tax_percent' => ['required', 'numeric', 'min:0', 'max:100'],
+        'paper_width' => ['required', 'in:58mm,80mm'],
+        'qris_nmid' => ['nullable', 'string', 'max:50'],
+        'qris_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        'receipt_footer' => ['nullable', 'string', 'max:255'],
+        'low_stock_threshold' => ['required', 'integer', 'min:0', 'max:999'],
+        'board_slide_seconds' => ['required', 'integer', 'min:3', 'max:120'],
+    ], [], [
+        'store_name' => 'nama toko', 'tax_percent' => 'pajak',
+        'paper_width' => 'lebar kertas', 'low_stock_threshold' => 'ambang stok menipis',
+        'board_slide_seconds' => 'durasi per gambar', 'qris_image' => 'gambar QRIS',
+    ]);
 
-        $old = setting();
+    // Berkas QRIS disimpan terpisah, bukan lewat loop di bawah.
+    $qrisFile = $request->file('qris_image');
+    unset($data['qris_image']);
 
-        foreach ($data as $key => $value) {
-            Setting::put($key, $value ?? '');
+    $old = setting();
+
+    foreach ($data as $key => $value) {
+        Setting::put($key, $value ?? '');
+    }
+
+    if ($qrisFile) {
+        $oldPath = $old['qris_image'] ?? null;
+        $path = $qrisFile->store('qris', 'public');
+        Setting::put('qris_image', $path);
+
+        if ($oldPath) {
+            Storage::disk('public')->delete($oldPath);
         }
 
-        Setting::flush();
-
-        AuditLogger::log('update', 'Pengaturan toko diperbarui', null, $old, $data);
-
-        return back()->with('success', 'Pengaturan tersimpan.');
+        $data['qris_image'] = $path;
     }
+
+    Setting::flush();
+
+    AuditLogger::log('update', 'Pengaturan toko diperbarui', null, $old, $data);
+
+    return back()->with('success', 'Pengaturan tersimpan.');
+    }   
 
     /** Tambah gambar slide layar pelanggan (bisa beberapa sekaligus). */
     public function slideStore(Request $request)

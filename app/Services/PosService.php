@@ -91,14 +91,16 @@ class PosService
                 $paidAmount = $total;
                 $change     = 0.0;
             }
-
+            $queueBusy = Transaction::today()->completed()
+            ->whereIn('queue_status', ['called', 'waiting'])
+            ->exists();
             $transaction = Transaction::create([
                 'invoice_no'     => Transaction::nextInvoiceNo(),
                 'shift_id'       => $shift->id,
                 'user_id'        => $cashier->id,
                 'customer_name'  => $customerName ?: null,
                 'queue_no'       => Transaction::nextQueueNo(),
-                'queue_status'   => 'waiting',
+                'queue_status'   => $queueBusy ? 'waiting' : 'called',
                 'subtotal'       => $subtotal,
                 'tax_percent'    => $taxPercent,
                 'tax_amount'     => $taxAmount,

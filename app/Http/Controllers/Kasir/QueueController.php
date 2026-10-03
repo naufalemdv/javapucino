@@ -14,7 +14,7 @@ class QueueController extends Controller
 {
     public function index()
     {
-        $today = Transaction::today()->completed()->whereNotNull('queue_no');
+        $today = Transaction::today()->completed()->whereNotNull('queue_no')->with('items');
 
         return view('kasir.antrian', [
             'current' => (clone $today)->where('queue_status', 'called')->latest('updated_at')->first(),

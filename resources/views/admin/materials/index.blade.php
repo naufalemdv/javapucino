@@ -6,7 +6,7 @@
 @section('content')
   @include('partials.topbar', [
     'title' => 'Stok Bahan',
-    'sub'   => $materials->count().' bahan Â· '.$lowN.' menipis',
+    'sub'   => $materials->count().' bahan - '.$lowN.' menipis',
     'right' => '<a class="btn btn-red btn-sm" href="'.route('admin.materials.create').'">+ Tambah bahan</a>',
   ])
 
@@ -21,7 +21,7 @@
             <td class="mini" style="font-weight:700">{{ $m->unit }}</td>
             <td class="r num" style="font-weight:800">{{ angka($m->stock) }}</td>
             <td class="r num" style="color:var(--ink-3)">{{ angka($m->min_stock) }}</td>
-            <td class="r num" style="color:var(--ink-3)">{{ $m->unit_cost ? rupiah($m->unit_cost) : 'â€”' }}</td>
+            <td class="r num" style="color:var(--ink-3)">{{ $m->unit_cost ? rupiah($m->unit_cost) : '-' }}</td>
             <td>{!! $m->isLow() ? '<span class="tag t-amber">Menipis</span>' : '<span class="tag t-green">Aman</span>' !!}</td>
             <td class="r" style="white-space:nowrap">
               <button class="btn btn-line btn-sm" type="button"
@@ -54,10 +54,10 @@
             <td class="r num" style="font-weight:800;color:{{ (float) $mv->qty < 0 ? 'var(--red)' : 'var(--green)' }}">
               {{ (float) $mv->qty > 0 ? '+' : '' }}{{ angka($mv->qty) }}
             </td>
-            <td class="r num" style="color:var(--ink-3)">{{ $mv->unit_cost ? rupiah($mv->unit_cost) : 'â€”' }}</td>
+            <td class="r num" style="color:var(--ink-3)">{{ $mv->unit_cost ? rupiah($mv->unit_cost) : '-' }}</td>
             <td class="r num">{{ angka($mv->stock_before) }}</td>
             <td class="r num">{{ angka($mv->stock_after) }}</td>
-            <td class="mini">{{ $mv->note ?: 'â€”' }}</td>
+            <td class="mini">{{ $mv->note ?: '-' }}</td>
           </tr>
         @empty
           <tr><td colspan="8"><div class="empty"><b>Belum ada pergerakan stok</b>Setiap penjualan, void, dan restock akan tercatat di sini.</div></td></tr>
@@ -88,8 +88,8 @@ document.querySelectorAll('[data-restock]').forEach(btn => btn.addEventListener(
   openModal(`
     <div class="modal-h">
       <div><h3>Restock bahan</h3>
-        <div class="sub">${btn.dataset.name} Â· stok kini ${btn.dataset.stock} ${btn.dataset.unit}</div></div>
-      <button class="x" type="button" data-act="close">âœ•</button>
+        <div class="sub">${btn.dataset.name} &middot; stok kini ${btn.dataset.stock} ${btn.dataset.unit}</div></div>
+      <button class="x" type="button" data-act="close">&times;</button>
     </div>
     <div class="modal-b">
       <div class="row2">
@@ -98,9 +98,9 @@ document.querySelectorAll('[data-restock]').forEach(btn => btn.addEventListener(
         <div class="field"><label>Harga per ${btn.dataset.unit} (Rp)</label>
           <input class="inp num" id="mCost" inputmode="numeric" value="${btn.dataset.cost}" placeholder="0" style="height:52px;font-size:19px;font-weight:800"></div>
       </div>
-      <div class="hint" id="mTotal">Total pembelian <b>Rp 0</b> â€” akan tercatat otomatis di menu Pengeluaran.</div>
+      <div class="hint" id="mTotal">Total pembelian <b>Rp 0</b> &mdash; akan tercatat otomatis di menu Pengeluaran.</div>
       <div class="field"><label>Catatan</label>
-        <input class="inp" id="mNote" placeholder="Kiriman supplier, nota #â€¦"></div>
+        <input class="inp" id="mNote" placeholder="Kiriman supplier, nota #..."></div>
     </div>
     <div class="modal-f">
       <button class="btn btn-line" type="button" data-act="close">Batal</button>
@@ -113,7 +113,7 @@ document.querySelectorAll('[data-restock]').forEach(btn => btn.addEventListener(
 
   const refresh = () => {
     total.innerHTML = 'Total pembelian <b>' + rp(num(add.value) * num(cost.value))
-                    + '</b> â€” akan tercatat otomatis di menu Pengeluaran.';
+                    + '</b> &mdash; akan tercatat otomatis di menu Pengeluaran.';
   };
   add.addEventListener('input', refresh);
   cost.addEventListener('input', refresh);
@@ -134,4 +134,3 @@ document.querySelectorAll('[data-restock]').forEach(btn => btn.addEventListener(
   });
 }));
 </script>
-@endpush

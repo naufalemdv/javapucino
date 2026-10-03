@@ -12,7 +12,7 @@
   <div class="page">
     @if($errors->any())<div class="alert alert-err">{{ $errors->first() }}</div>@endif
 
-    <form method="POST" action="{{ route('admin.settings.update') }}">
+   <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data">
       @csrf @method('PUT')
 
       <div class="grid2">
@@ -43,7 +43,15 @@
                   </select></div>
               </div>
               <div class="field"><label>NMID QRIS</label>
-                <input class="inp" name="qris_nmid" value="{{ old('qris_nmid', $s['qris_nmid'] ?? '') }}"></div>
+                  <input class="inp" name="qris_nmid" value="{{ old('qris_nmid', $s['qris_nmid'] ?? '') }}">
+                  <div class="hint">Isi sesuai NMID yang tertera di QRIS toko.</div></div>
+              <div class="field"><label>Gambar QRIS</label>
+                  @if(! empty($s['qris_image']))
+                      <img src="{{ asset('storage/'.$s['qris_image']) }}" alt="QRIS toko"
+                          style="display:block;width:160px;max-width:100%;border:1px solid #E5E5EA;border-radius:10px;margin-bottom:8px">
+                  @endif
+                  <input class="inp" type="file" name="qris_image" accept="image/jpeg,image/png,image/webp">
+                  <div class="hint">Unggah gambar QRIS asli toko (JPG, PNG, atau WEBP, maks 2 MB). Gambar ini tampil di popup pembayaran kasir. Kosongkan kalau tidak ingin mengganti.</div></div>
               <div class="field"><label>Ambang stok menipis</label>
                 <input class="inp num" name="low_stock_threshold" inputmode="numeric"
                        value="{{ old('low_stock_threshold', $s['low_stock_threshold'] ?? 5) }}" required>

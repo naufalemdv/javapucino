@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\MaterialController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ShiftReportController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
@@ -18,7 +19,6 @@ use App\Http\Controllers\Kasir\QueueController;
 use App\Http\Controllers\Kasir\ShiftController;
 use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\ShiftReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +64,7 @@ Route::middleware(['auth', 'role:kasir'])->prefix('kasir')->name('kasir.')->grou
         Route::get('/', [PosController::class, 'index'])->name('pos');
         Route::post('/transaksi', [PosController::class, 'store'])->name('transaksi.store');
         Route::get('/riwayat', [PosController::class, 'history'])->name('riwayat');
+        Route::post('/transaksi/{transaction}/void', [PosController::class, 'void'])->name('transaksi.void');
 
         // FR-16 tutup shift
         Route::get('/tutup-shift', [ShiftController::class, 'edit'])->name('shift.edit');
@@ -103,12 +104,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Laporan, audit, pengaturan
     Route::get('/laporan', [ReportController::class, 'index'])->name('report');
     Route::get('/laporan/export', [ReportController::class, 'export'])->name('report.export');
-        // Rekap shift & selisih kas (FR-28)
+    // Rekap shift & selisih kas (FR-28)
     Route::get('/shift', [ShiftReportController::class, 'index'])->name('shifts');
     Route::get('/shift/export', [ShiftReportController::class, 'export'])->name('shifts.export');
-    
+
     Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit');
-    
 
     // Pengeluaran & laba bersih (FR-27) — rute statis didaftarkan sebelum resource
     Route::get('/pengeluaran/export', [ExpenseController::class, 'export'])->name('expenses.export');

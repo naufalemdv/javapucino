@@ -37,7 +37,7 @@
                 <td>{{ $t->customer_name ?: '—' }}</td>
                 <td><span class="tag {{ $t->payment_method === 'cash' ? 't-gray' : 't-black' }}">{{ $t->paymentLabel() }}</span></td>
                 <td class="r num" style="font-weight:800">{{ rupiah($t->total) }}</td>
-                <td class="r"><a class="btn btn-line btn-sm" href="{{ route('struk.show', $t) }}">Struk</a></td>
+                <td class="r"><a class="btn btn-line btn-sm" href="{{ route('struk.show', $t) }}">Struk</a>@unless($t->isVoid())<button class="btn btn-danger-line btn-sm" type="button" data-void="{{ $t->id }}" data-inv="{{ $t->invoice_no }}" data-total="{{ rupiah($t->total) }}" data-items="{{ $t->items_count }}">Void</button>@endunless</td>
               </tr>
             @endforeach
           </tbody>
@@ -48,4 +48,49 @@
       <div class="card"><div class="empty"><b>Belum ada transaksi</b>Transaksi pada shift ini akan muncul di sini.</div></div>
     @endif
   </div>
+
+  <form method="POST" id="voidForm" action="" style="display:none">
+    @csrf
+    <input type="hidden" name="void_reason" id="vReason">
+  </form>
 @endsection
+
+@push('scripts')
+<script>
+const base = @json(url('kasir/transaksi'));
+
+document.querySelectorAll('[data-void]').forEach(btn => btn.addEventListener('click', () => {
+  openModal(`
+    <div class="modal-h">
+      <div><h3>Void transaksi</h3><div class="sub">${btn.dataset.inv} · ${btn.dataset.total}</div></div>
+      <button class="x" type="button" data-act="close">✕</button>
+    </div>
+    <div class="modal-b">
+      <div class="card" style="border-color:#F3BFC1;background:var(--red-soft);margin-bottom:16px">
+        <div class="card-b" style="padding:13px 15px">
+          <b style="font-size:13px;color:var(--red-dark)">Transaksi tidak dihapus</b>
+          <p class="mini" style="margin:5px 0 0;color:var(--red-dark)">
+            Status berubah menjadi <b>void</b>, stok ${btn.dataset.items} item dikembalikan,
+            dan seluruh aksi tercatat di audit log.</p>
+        </div>
+      </div>
+      <div class="field"><label>Alasan void (wajib, min. 5 karakter)</label>
+        <textarea class="inp" id="vInput" placeholder="Contoh: pelanggan membatalkan pesanan sebelum diracik"></textarea></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-line" type="button" data-act="close">Batal</button>
+      <button class="btn btn-red" type="button" id="vOk" style="flex:1.4">Void transaksi</button>
+    </div>`);
+
+  document.getElementById('vInput').focus();
+  document.getElementById('vOk').addEventListener('click', () => {
+    const reason = document.getElementById('vInput').value.trim();
+    if (reason.length < 5) return toast('Alasan void wajib diisi minimal 5 karakter');
+    const form = document.getElementById('voidForm');
+    form.action = base + '/' + btn.dataset.void + '/void';
+    document.getElementById('vReason').value = reason;
+    form.submit();
+  });
+}));
+</script>
+@endpush
